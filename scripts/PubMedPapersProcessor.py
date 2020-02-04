@@ -4,6 +4,17 @@
 '''
 import urllib2
 from xml.dom import minidom
+import time
+
+def resolve_this(url):
+    try:
+        return urllib2.urlopen(url)
+    except urllib2.HTTPError, e:
+        if e.code == 429:
+             time.sleep(5);
+             return resolve_this(url)
+        raise
+      
 
 def returnTitles(pmid_list):
 
@@ -18,7 +29,7 @@ def returnTitles(pmid_list):
         ids = ids+str(i)+","
 
     url = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id="+ids+"&retmode=xml"
-    response = urllib2.urlopen(url)
+    response = resolve_this(url)
     xmldoc = minidom.parse(response)
     
  

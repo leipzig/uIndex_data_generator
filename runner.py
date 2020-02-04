@@ -55,7 +55,7 @@ if __name__ == '__main__':
     print "########################################################"
     print "###   Downloading informatics resource PubMed IDs.   ###"
     print "########################################################"
-    pmids_fp = run_pubmed_query(args.output_directory, limit=1)
+    pmids_fp = run_pubmed_query(args.output_directory, limit=100)
 
     print "########################################################"
     print "###  Processing informatics resource PubMed records. ###"

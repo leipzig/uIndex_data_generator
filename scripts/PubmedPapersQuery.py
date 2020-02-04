@@ -4,9 +4,19 @@
 '''
 import urllib2
 from xml.dom import minidom
+import time
+
+def resolve_this(url):
+    try:
+        return urllib2.urlopen(url)
+    except urllib2.HTTPError, e:
+        if e.code == 429:
+             time.sleep(5);
+             return resolve_this(url)
+        raise
 
 def returnIDs(q):    
-    response = urllib2.urlopen(q)
+    response = resolve_this(q)
     xmldoc = minidom.parse(response)
     
     ret = set()
@@ -19,7 +29,7 @@ def write(medlines,out):
         out.write(m+"\n")
     out.close()
 
-def run(output_directory,limit=100000):
+def run(output_directory,limit=100):
     master = set()
 
     #
@@ -33,22 +43,27 @@ def run(output_directory,limit=100000):
     # RESCUE queries: any combination of two MH (does not need to be major)
     #
     q = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=(Software%5BMH%5D%20AND%20(databases,%20factual[MH:NOEXP]%20OR%20databases,%20protein[MH:NOEXP]%20OR%20databases,%20nucleic%20acid[MH:NOEXP]%20OR%20databases,%20pharmaceutical[MH:NOEXP]%20OR%20databases,%20chemical[MH:NOEXP]%20OR%20databases,%20genetic[MH:NOEXP]))&RETMAX=" + str(limit) + "&retmode=XML"
+    print(q)
     for pmid in returnIDs(q):
         master.add(pmid)
 
-
+    print("### (Algorithms%5BMH%5D%20AND%20(databases,%20factual[MH:NOEXP]")
     q = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=(Algorithms%5BMH%5D%20AND%20(databases,%20factual[MH:NOEXP]%20OR%20databases,%20protein[MH:NOEXP]%20OR%20databases,%20nucleic%20acid[MH:NOEXP]%20OR%20databases,%20pharmaceutical[MH:NOEXP]%20OR%20databases,%20chemical[MH:NOEXP]%20OR%20databases,%20genetic[MH:NOEXP]))&RETMAX=" + str(limit) + "&retmode=XML"
+    print(q)
     for pmid in returnIDs(q):
         master.add(pmid)
 
-
-    q = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=(Algorithms%5BMH%5D%20AND%20Software%5BMH%5D)&RETMAX=" + str(limit) + "&retmode=XML"
-    for pmid in returnIDs(q):
-        master.add(pmid)
-
-    q = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=(Computer%20Communication%20Networks%5BMH%5D%20AND%20(databases,%20factual[MH:NOEXP]%20OR%20databases,%20protein[MH:NOEXP]%20OR%20databases,%20nucleic%20acid[MH:NOEXP]%20OR%20databases,%20pharmaceutical[MH:NOEXP]%20OR%20databases,%20chemical[MH:NOEXP]%20OR%20databases,%20genetic[MH:NOEXP]))&RETMAX=" + str(limit) + "&retmode=XML"
-    for pmid in returnIDs(q):
-        master.add(pmid)
+    # print("#### (Algorithms%5BMH%5D%20AND%20Software%5BMH%5D)")
+    # q = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=(Algorithms%5BMH%5D%20AND%20Software%5BMH%5D)&RETMAX=" + str(limit) + "&retmode=XML"
+    # print(q)
+    # for pmid in returnIDs(q):
+    #     master.add(pmid)
+    # 
+    # print("#### (Computer%20Communication%20Networks%5")
+    # q = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=(Computer%20Communication%20Networks%5BMH%5D%20AND%20(databases,%20factual[MH:NOEXP]%20OR%20databases,%20protein[MH:NOEXP]%20OR%20databases,%20nucleic%20acid[MH:NOEXP]%20OR%20databases,%20pharmaceutical[MH:NOEXP]%20OR%20databases,%20chemical[MH:NOEXP]%20OR%20databases,%20genetic[MH:NOEXP]))&RETMAX=" + str(limit) + "&retmode=XML"
+    # print(q)
+    # for pmid in returnIDs(q):
+    #     master.add(pmid)
 
     print "Downloaded "+str(len(master))+" PubMed IDs."
     #
