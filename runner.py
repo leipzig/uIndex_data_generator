@@ -43,29 +43,29 @@ if __name__ == '__main__':
                         default='~/.my.cnf',
                         required=False
                         )
-
+    parser.add_argument('-skip', dest='skip', action='store_true', default=False)
     args = parser.parse_args()
 
-
-    print "########################################################"
-    print "### Processing PMC records to build citing universe. ###"
-    print "########################################################"
-    pmc_article_fp, pmc_reference_fp, pmc_sections_fp = run_pmc_extractor(args.input_directory, args.output_directory)
-
-    print "########################################################"
-    print "###   Downloading informatics resource PubMed IDs.   ###"
-    print "########################################################"
-    pmids_fp = run_pubmed_query(args.output_directory, limit=100)
-
-    print "########################################################"
-    print "###  Processing informatics resource PubMed records. ###"
-    print "########################################################"
-    titles_fp, dates_fp = run_pubmed_processor(args.output_directory, pmids_fp)
-
-    print "########################################################"
-    print "###      Extracting informatics resource names.      ###"
-    print "########################################################"
-    resource_names_fp = run_toolname_extractor(args.output_directory, titles_fp)
+    if not args.skip:
+        print "########################################################"
+        print "### Processing PMC records to build citing universe. ###"
+        print "########################################################"
+        pmc_article_fp, pmc_reference_fp, pmc_sections_fp = run_pmc_extractor(args.input_directory, args.output_directory)
+    
+        print "########################################################"
+        print "###   Downloading informatics resource PubMed IDs.   ###"
+        print "########################################################"
+        pmids_fp = run_pubmed_query(args.output_directory, limit=100)
+    
+        print "########################################################"
+        print "###  Processing informatics resource PubMed records. ###"
+        print "########################################################"
+        titles_fp, dates_fp = run_pubmed_processor(args.output_directory, pmids_fp)
+    
+        print "########################################################"
+        print "###      Extracting informatics resource names.      ###"
+        print "########################################################"
+        resource_names_fp = run_toolname_extractor(args.output_directory, titles_fp)
 
     print "########################################################"
     print "###      Creating and loading u-Index database.      ###"

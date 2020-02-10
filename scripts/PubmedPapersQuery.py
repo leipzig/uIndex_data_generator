@@ -29,7 +29,7 @@ def write(medlines,out):
         out.write(m+"\n")
     out.close()
 
-def run(output_directory,limit=100):
+def run(output_directory,limit=100000):
     master = set()
 
     #
@@ -53,17 +53,17 @@ def run(output_directory,limit=100):
     for pmid in returnIDs(q):
         master.add(pmid)
 
-    # print("#### (Algorithms%5BMH%5D%20AND%20Software%5BMH%5D)")
-    # q = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=(Algorithms%5BMH%5D%20AND%20Software%5BMH%5D)&RETMAX=" + str(limit) + "&retmode=XML"
-    # print(q)
-    # for pmid in returnIDs(q):
-    #     master.add(pmid)
-    # 
-    # print("#### (Computer%20Communication%20Networks%5")
-    # q = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=(Computer%20Communication%20Networks%5BMH%5D%20AND%20(databases,%20factual[MH:NOEXP]%20OR%20databases,%20protein[MH:NOEXP]%20OR%20databases,%20nucleic%20acid[MH:NOEXP]%20OR%20databases,%20pharmaceutical[MH:NOEXP]%20OR%20databases,%20chemical[MH:NOEXP]%20OR%20databases,%20genetic[MH:NOEXP]))&RETMAX=" + str(limit) + "&retmode=XML"
-    # print(q)
-    # for pmid in returnIDs(q):
-    #     master.add(pmid)
+    print("#### (Algorithms%5BMH%5D%20AND%20Software%5BMH%5D)")
+    q = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=(Algorithms%5BMH%5D%20AND%20Software%5BMH%5D)&RETMAX=" + str(limit) + "&retmode=XML"
+    print(q)
+    for pmid in returnIDs(q):
+        master.add(pmid)
+
+    print("#### (Computer%20Communication%20Networks%5")
+    q = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=(Computer%20Communication%20Networks%5BMH%5D%20AND%20(databases,%20factual[MH:NOEXP]%20OR%20databases,%20protein[MH:NOEXP]%20OR%20databases,%20nucleic%20acid[MH:NOEXP]%20OR%20databases,%20pharmaceutical[MH:NOEXP]%20OR%20databases,%20chemical[MH:NOEXP]%20OR%20databases,%20genetic[MH:NOEXP]))&RETMAX=" + str(limit) + "&retmode=XML"
+    print(q)
+    for pmid in returnIDs(q):
+        master.add(pmid)
 
     print "Downloaded "+str(len(master))+" PubMed IDs."
     #

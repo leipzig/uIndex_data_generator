@@ -4,6 +4,7 @@
 import MySQLdb
 import csv
 import sys
+import codecs
 
 def escape(str):
     if str is None:
@@ -139,12 +140,12 @@ def load_pmc_article_info(data_file, db_handler):
     with open(data_file, 'r') as infile:
         reader = csv.reader(infile, delimiter="\t", quoting=csv.QUOTE_NONE)
         for row in reader:
-            pmcid = row[0].strip()
-            pmid = row[1].strip()
-            doi = row[2].strip()
-            year = row[3].strip()
-            journal = row[4].strip()
-            heading = row[5].strip()
+            pmcid = "{}".format(row[0].strip())
+            pmid = "{}".format(row[1].strip())
+            doi = "{}".format(row[2].strip())
+            year = "{}".format(row[3].strip())
+            journal = "{}".format(row[4].strip())
+            heading = "{}".format(row[5].strip())
 
             sql = "INSERT INTO `uindex_data`.`pmc_article_info` VALUES(%s,%s,%s,%s,%s,%s);"
             try:
@@ -364,11 +365,20 @@ def generate_uindex_data(db_handler):
 def run(db_host, sql_port, cnf_file, pmid_titles_fp, pmid_dates_fp, pmid_keys_fp, pmc_article_fp, pmc_ref_fp, pmc_section_fp):
     myDB = MySQLdb.connect(host=db_host,port=sql_port,read_default_file=cnf_file)
     cHandler = myDB.cursor()
+    
+    #create_tables(cHandler)
+    #load_pubmed_titles(pmid_titles_fp,cHandler)
+    #load_pubmed_years(pmid_dates_fp,cHandler)
+    #load_pubmed_keys(pmid_keys_fp, cHandler)
+    output_dir='output/'
+    pmc_ref_fp = codecs.open(output_dir+"pmc_reference_citations.txt","r", "utf-8")
+    pmc_article_fp = codecs.open(output_dir+"pmc_reference_article.txt","r", "utf-8")
+    pmc_section_fp = codecs.open(output_dir+"pmc_reference_sections.txt","r", "utf-8")
 
-    create_tables(cHandler)
-    load_pubmed_titles(pmid_titles_fp,cHandler)
-    load_pubmed_years(pmid_dates_fp,cHandler)
-    load_pubmed_keys(pmid_keys_fp, cHandler)
+    pmc_ref_fp = output_dir+"pmc_reference_citations.txt"
+    pmc_article_fp = output_dir+"pmc_reference_article.txt"
+    pmc_section_fp = output_dir+"pmc_reference_sections.txt"
+
     load_pmc_article_info(pmc_article_fp, cHandler)
     load_pmc_article_citations(pmc_ref_fp, cHandler)
     load_pmc_article_sections(pmc_section_fp, cHandler)
